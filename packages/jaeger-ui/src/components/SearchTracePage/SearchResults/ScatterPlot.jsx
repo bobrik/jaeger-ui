@@ -68,7 +68,7 @@ export default function ScatterPlot(props) {
           <XAxis
             title="Time"
             tickTotal={4}
-            tickFormat={t => dayjs(t / ONE_MILLISECOND).format('hh:mm:ss a')}
+            tickFormat={t => dayjs.utc(t / ONE_MILLISECOND).format('HH:mm:ss[Z]')}
           />
           <YAxis title="Duration" tickTotal={3} tickFormat={t => formatDuration(t)} />
           <MarkSeries

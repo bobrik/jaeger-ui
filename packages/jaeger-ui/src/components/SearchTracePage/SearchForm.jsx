@@ -19,6 +19,7 @@ import _get from 'lodash/get';
 import logfmtParser from 'logfmt/lib/logfmt_parser';
 import { stringify as logfmtStringify } from 'logfmt/lib/stringify';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import memoizeOne from 'memoize-one';
 import PropTypes from 'prop-types';
 import queryString from 'query-string';
@@ -38,6 +39,8 @@ import { getConfigValue } from '../../utils/config/get-config';
 import SearchableSelect from '../common/SearchableSelect';
 import './SearchForm.css';
 
+dayjs.extend(utc)
+
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -49,8 +52,8 @@ export function getUnixTimeStampInMSFromForm({ startDate, startDateTime, endDate
   const start = `${startDate} ${startDateTime}`;
   const end = `${endDate} ${endDateTime}`;
   return {
-    start: `${dayjs(start, 'YYYY-MM-DD HH:mm').valueOf()}000`,
-    end: `${dayjs(end, 'YYYY-MM-DD HH:mm').valueOf()}000`,
+    start: `${dayjs.utc(start, 'YYYY-MM-DD HH:mm').valueOf()}000`,
+    end: `${dayjs.utc(end, 'YYYY-MM-DD HH:mm').valueOf()}000`,
   };
 }
 
@@ -72,7 +75,7 @@ export function convTagsLogfmt(tags) {
 
 export function lookbackToTimestamp(lookback, from) {
   const unit = lookback.substr(-1);
-  return dayjs(from).subtract(parseInt(lookback, 10), unit).valueOf() * 1000;
+  return dayjs.utc(from).subtract(parseInt(lookback, 10), unit).valueOf() * 1000;
 }
 
 const lookbackOptions = [
@@ -272,8 +275,7 @@ export class SearchFormImpl extends React.PureComponent {
     const selectedServicePayload = services.find(s => s.name === selectedService);
     const opsForSvc = (selectedServicePayload && selectedServicePayload.operations) || [];
     const noSelectedService = selectedService === '-' || !selectedService;
-    const tz = selectedLookback === 'custom' ? new Date().toTimeString().replace(/^.*?GMT/, 'UTC') : null;
-
+    const tz = selectedLookback === 'custom' ? 'UTC. What else did you expect? We\'re not cavemen.' : null;
     return (
       <Form layout="vertical" onSubmitCapture={handleSubmit}>
         <FormItem
@@ -555,7 +557,7 @@ export function mapStateToProps(state) {
     traceID: traceIDParams,
   } = queryString.parse(state.router.location.search);
 
-  const nowInMicroseconds = dayjs().valueOf() * 1000;
+  const nowInMicroseconds = dayjs.utc().valueOf() * 1000;
   const today = formatDate(nowInMicroseconds);
   const currentTime = formatTime(nowInMicroseconds);
   const lastSearch = store.get('lastSearch');

@@ -84,7 +84,7 @@ const quantizeDuration = (duration: number, floatPrecision: number, conversionFa
  * ```
  */
 export function formatDate(duration: number): string {
-  return dayjs(duration / ONE_MILLISECOND).format(STANDARD_DATE_FORMAT);
+  return dayjs.utc(duration / ONE_MILLISECOND).format(STANDARD_DATE_FORMAT);
 }
 
 /**
@@ -97,7 +97,7 @@ export function formatDate(duration: number): string {
  * ```
  */
 export function formatTime(duration: number): string {
-  return dayjs(duration / ONE_MILLISECOND).format(STANDARD_TIME_FORMAT);
+  return dayjs.utc(duration / ONE_MILLISECOND).format(STANDARD_TIME_FORMAT);
 }
 
 /**
@@ -110,7 +110,7 @@ export function formatTime(duration: number): string {
  * ```
  */
 export function formatDatetime(duration: number): string {
-  return dayjs(duration / ONE_MILLISECOND).format(STANDARD_DATETIME_FORMAT);
+  return dayjs.utc(duration / ONE_MILLISECOND).toISOString();
 }
 
 /**
@@ -174,24 +174,8 @@ export function formatDuration(duration: number): string {
 }
 
 export function formatRelativeDate(value: ConfigType, fullMonthName = false): string {
-  const m = dayjs.isDayjs(value) ? value : dayjs(value);
-
-  const monthFormat = fullMonthName ? 'MMMM' : 'MMM';
-  const dt = new Date();
-  if (dt.getFullYear() !== m.year()) {
-    return m.format(`${monthFormat} D, YYYY`);
-  }
-  const mMonth = m.month();
-  const mDate = m.date();
-  const date = dt.getDate();
-  if (mMonth === dt.getMonth() && mDate === date) {
-    return TODAY;
-  }
-  dt.setDate(date - 1);
-  if (mMonth === dt.getMonth() && mDate === dt.getDate()) {
-    return YESTERDAY;
-  }
-  return m.format(`${monthFormat} D`);
+  const m = dayjs.isDayjs(value) ? value.utc() : dayjs.utc(value);
+  return m.format(STANDARD_DATE_FORMAT)
 }
 
 export const getSuitableTimeUnit = (microseconds: number): LongTimeUnit => {

@@ -61,7 +61,7 @@ export default class ResultItem extends React.PureComponent<Props, State> {
     super(props, state);
     const { startTime, spans } = props.trace;
 
-    const startTimeDayjs = dayjs(startTime / 1000);
+    const startTimeDayjs = dayjs.utc(startTime / 1000);
 
     const erroredServices: Set<string> = new Set<string>();
 
@@ -75,7 +75,7 @@ export default class ResultItem extends React.PureComponent<Props, State> {
 
     this.state = {
       numSpans: spans.length,
-      timeStr: startTimeDayjs.format('h:mm:ss a'),
+      timeStr: startTimeDayjs.format('HH:mm:ss[Z]'),
       fromNow: startTimeDayjs.fromNow(),
       numErredSpans,
       erroredServices,
@@ -110,7 +110,7 @@ export default class ResultItem extends React.PureComponent<Props, State> {
                 </Tag>
               )}
             </Col>
-            <Col span={16} className="ub-p2">
+            <Col span={14} className="ub-p2">
               <ul className="ub-list-reset" data-test={markers.SERVICE_TAGS}>
                 {_sortBy(services, s => s.name).map(service => {
                   const { name, numberOfSpans: count } = service;
@@ -130,10 +130,10 @@ export default class ResultItem extends React.PureComponent<Props, State> {
                 })}
               </ul>
             </Col>
-            <Col span={4} className="ub-p3 ub-tx-right-align">
+            <Col span={6} className="ub-p3 ub-tx-right-align">
               {formatRelativeDate(startTime / 1000)}
               <Divider type="vertical" />
-              {this.state.timeStr.slice(0, -3)}&nbsp;{this.state.timeStr.slice(-2)}
+              {this.state.timeStr}
               <br />
               <small>{this.state.fromNow}</small>
             </Col>

@@ -28,7 +28,8 @@ type Props = {
 export default function RelativeDate(props: Props): JSX.Element {
   const { value, includeTime, fullMonthName } = props;
   const m = dayjs.isDayjs(value) ? value : dayjs(value);
-  const dateStr = formatRelativeDate(m, Boolean(fullMonthName));
-  const timeStr = includeTime ? `, ${m.format('h:mm:ss a')}` : '';
-  return <span>{`${dateStr}${timeStr}`}</span>;
+  if (includeTime) {
+    return m.toISOString();
+  }
+  return <span>{`${formatRelativeDate(m, Boolean(fullMonthName))}`}</span>;
 }
